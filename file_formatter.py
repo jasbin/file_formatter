@@ -25,7 +25,11 @@ directory = r'submitted_answers'
 destination = r'corrected_file_name_answers'
 
 init(autoreset=True)
-    
+
+# Create necessary folder if not exist
+Path(directory).mkdir(parents=True, exist_ok=True)
+Path(destination).mkdir(parents=True, exist_ok=True)
+
 # File Extension Here. Example: PDF
 fileExtension="pdf"
 totalSubmission=0
@@ -138,3 +142,6 @@ elif choice==3:
     print(Fore.LIGHTGREEN_EX+"\nTotal Valid Files = "+str(totalValidFiles)+Fore.RESET+Fore.LIGHTRED_EX+"\nTotal Corrupted Files = "+str(totalCorruptedFiles)+Fore.RESET)
 else:
     print("invalid choice")
+    
+#just to hold the console
+input()

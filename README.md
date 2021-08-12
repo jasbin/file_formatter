@@ -1,4 +1,4 @@
-## file_formatter
+## File Formatter
 file formatter formats the file according to the requirements:
 
 ## Overview
@@ -11,3 +11,7 @@ Run the program and then two folder will be generated automatically
 ```sh
 python >=3.5
 ```
+## Features
+- Format File
+- Format File according to symbol number range
+- Check for corrupted files

@@ -124,7 +124,15 @@ elif choice==2:
     except OSError:
         print(Fore.LIGHTYELLOW_EX+"Could not open/read file, may be this directory does not exist"+Fore.RESET+" \n---------------------------------------\n"+directory+"\n---------------------------------------\nso check the file path again")
 elif choice==3:
-    correctFormatDirectory=r'corrected_file_name_answers'
+    print(Fore.LIGHTCYAN_EX+"Do you want to check corrupted files from \n1."+directory+"\n2."+destination+":"+Fore.RESET)
+    folderChoice = int(input())
+    if folderChoice==1:
+        correctFormatDirectory=directory
+    elif folderChoice==2:
+        correctFormatDirectory=destination
+    else:
+        print("invalid choice")
+        input()
     for root, dirs, files in os.walk(correctFormatDirectory):
         for filename in files:
             #print("file name:"+filename+" in "+os.path.join(root, filename))

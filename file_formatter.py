@@ -37,7 +37,8 @@ totalFileRangeFound=0
 noSymbolNoCount=0
 totalValidFiles=0
 totalCorruptedFiles=0
-print(Fore.LIGHTCYAN_EX+"Options \n1.Format File \n2.Format File with symbol no range \n3.Corrupt File Checker \nEnter your choice:"+Fore.RESET)
+print(Fore.LIGHTCYAN_EX+"File Formatter v3 \n----------------- \n"+Fore.RESET)
+print(Fore.LIGHTCYAN_EX+"Available Choice \n1.Format File \n2.Format File with symbol no range \n3.Corrupt File Checker \nEnter your choice:"+Fore.RESET)
 choice=int(input())
 print("*****************************************************************\n")
 

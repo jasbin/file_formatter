@@ -1,5 +1,5 @@
 ## Exam Tool File Formatter
-Exam tool file formatter formats the file according to the requirements:
+Exam tool file formatter downloads,checks for corrupted files and formats the file according to the requirements:
 
 ## Overview
 Run the program and then two folder will be generated automatically

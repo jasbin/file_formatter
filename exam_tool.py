@@ -25,9 +25,9 @@ import win32com.client
 #Downloaded Files Folder Here
 downloadedFiles = r'Downloaded Files'
 # Local Folder or Full directory where all the PDF answer files are saved
-directory = r'Submitted Answer'
+directory = 'Submitted Answer'
 # Local Folder or Full directory where all the formatted files are need to be saved
-destination = r'Corrected File Format Answer Files'
+destination = r'Correct Format Answer Files'
 
 init(autoreset=True)
 
@@ -74,24 +74,29 @@ if choice==1:
             for attachment in item.Attachments:
                 if attachment.filename.endswith((".pdf", ".PDF")):
                     print(Fore.LIGHTYELLOW_EX+"downloading "+attachment.filename+Fore.RESET)
-                    attachment.SaveAsFile(os.path.join(download_folder, attachment.FileName))
+                    try:
+                        attachment.SaveAsFile(os.path.join(download_folder, attachment.FileName))
+                    except Exception as e:
+                        print(Fore.LIGHTRED_EX+"file url is downloaded instead of file because file is not directly attached in mail"+Fore.RESET)
                     print(Fore.LIGHTGREEN_EX+attachment.FileName+" Downloaded!!"+Fore.RESET)
 
         print(Fore.LIGHTGREEN_EX+"--------------------\nDownload Completed!! \n--------------------"+Fore.RESET)
-    except:
-        print(Fore.LIGHTRED_EX+"Error Encountered!"+Fore.RESET)
+    except Exception as e:
+        print(Fore.LIGHTRED_EX+"invalid input"+Fore.RESET)
 
 elif choice==2:
-    # Exam Center Code Here.
-    examCenterCode= input("Enter Exam Center Code \n")
-    # Subject Name Here.
-    subjectName = input("Enter the Subject Name \n")
-    # Faculty Name Here.
-    faculty = input("Enter Faculty. Example: BE-IT \n")
-    # File Format Here. Example: 195-BE-IT_Subject Name_SymbolName
-    fileFormat=examCenterCode+"_"+faculty+"_"+subjectName+"_"
     try:
+        # Exam Center Code Here.
+        examCenterCode= input("Enter Exam Center Code \n")
+        # Subject Name Here.
+        subjectName = input("Enter the Subject Name \n")
+        # Faculty Name Here.
+        faculty = input("Enter Faculty. Example: BE-IT \n")
+        # File Format Here. Example: 195-BE-IT_Subject Name_SymbolName
+        fileFormat=examCenterCode+"_"+faculty+"_"+subjectName+"_"
+    
         for filename in os.listdir(directory):
+            print(filename)
             if filename.endswith(".pdf") or filename.endswith(".PDF"):
                 symbolNumber = re.search("(?<!\d)\d{8,10}(?!\d)", filename)
 

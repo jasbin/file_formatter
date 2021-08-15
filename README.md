@@ -1,5 +1,5 @@
-## File Formatter
-file formatter formats the file according to the requirements:
+## Exam Tool File Formatter
+Exam tool file formatter formats the file according to the requirements:
 
 ## Overview
 Run the program and then two folder will be generated automatically
@@ -12,6 +12,7 @@ Run the program and then two folder will be generated automatically
 python >=3.5
 ```
 ## Features
+- Download Files directly from Outlook Mail
 - Format File
 - Format File according to symbol number range
 - Check for corrupted files

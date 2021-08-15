@@ -1,9 +1,12 @@
 import os
 from shutil import copyfile
 import re
-import PyPDF2
+import PyPDF2   # pip install PyPDF2
 from pathlib import Path
 from colorama import init,Fore
+from imbox import Imbox # pip install imbox
+import datetime
+import win32com.client
 
 # ██████╗░███████╗██╗░░░██╗███████╗██╗░░░░░░█████╗░██████╗░███████╗██████╗░  ██████╗░██╗░░░██╗
 # ██╔══██╗██╔════╝██║░░░██║██╔════╝██║░░░░░██╔══██╗██╔══██╗██╔════╝██╔══██╗  ██╔══██╗╚██╗░██╔╝
@@ -20,15 +23,18 @@ from colorama import init,Fore
 # ░╚════╝░╚═╝░░╚═╝╚═════╝░╚═════╝░╚═╝╚═╝░░╚══╝  ╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚═╝
 
 # Local Folder or Full directory where all the PDF answer files are saved
-directory = r'submitted_answers'
+directory = r'Submitted Answer'
 # Local Folder or Full directory where all the formatted files are need to be saved
-destination = r'corrected_file_name_answers'
+destination = r'Corrected File Format Answer Files'
 
 init(autoreset=True)
 
 # Create necessary folder if not exist
 Path(directory).mkdir(parents=True, exist_ok=True)
 Path(destination).mkdir(parents=True, exist_ok=True)
+
+#Downloaded Files Folder Here
+download_folder = r'Downloaded Files'
 
 # File Extension Here. Example: PDF
 fileExtension="pdf"
@@ -37,12 +43,42 @@ totalFileRangeFound=0
 noSymbolNoCount=0
 totalValidFiles=0
 totalCorruptedFiles=0
-print(Fore.LIGHTCYAN_EX+"File Formatter v3 \n----------------- \n"+Fore.RESET)
-print(Fore.LIGHTCYAN_EX+"Available Choice \n1.Format File \n2.Format File with symbol no range \n3.Corrupt File Checker \nEnter your choice:"+Fore.RESET)
+print(Fore.LIGHTCYAN_EX+"-----------------"+Fore.RESET)
+print(Fore.LIGHTCYAN_EX+"File Formatter v4 \n-------------------------"+Fore.RESET)
+print(Fore.LIGHTCYAN_EX+"Developed By Jasbin Karki \n-------------------------\n"+Fore.RESET)
+print(Fore.LIGHTCYAN_EX+"Available Choice \n1.Download Files directly from Outlook Mail"+Fore.RESET+Fore.LIGHTYELLOW_EX+"(Outlook Mail should be installed and logged in)"+Fore.RESET+Fore.LIGHTCYAN_EX+" \n2.Format File \n3.Format File with symbol no range \n4.Corrupt File Checker \nEnter your choice:"+Fore.RESET)
 choice=int(input())
-print("*****************************************************************\n")
+print(Fore.LIGHTBLACK_EX+"####################################################################"+Fore.RESET)
 
 if choice==1:
+    download_folder = os.path.join(Path().resolve(),'Downloaded Files')
+
+    outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+    inbox = outlook.GetDefaultFolder(6) 
+
+    try:
+        # Format datetime
+        date_entry = input('Enter a date in YYYY-MM-DD format:')
+        year, month, day = map(int, date_entry.split('-'))
+        filterDateFrom=datetime.date(year, month, day)
+        filterDateTo=filterDateFrom+datetime.timedelta(days=1) #increment by 1 day
+
+        # Filter date according to To and From
+        items = inbox.Items.Restrict("[SentOn] >= \'"+str(filterDateFrom)+"\' AND [SentOn] < \'"+str(filterDateTo)+"\'")
+        flag=1 #download file
+        print(Fore.LIGHTYELLOW_EX+"Downloading Started this might take a while..."+Fore.RESET)
+        for item in items:
+            for attachment in item.Attachments:
+                if attachment.filename.endswith((".pdf", ".PDF")):
+                    print("downloading "+attachment.filename)
+                    attachment.SaveAsFile(os.path.join(download_folder, attachment.FileName))
+                    print(Fore.LIGHTGREEN_EX+attachment.FileName+" Downloaded!!"+Fore.RESET)
+
+        print(Fore.LIGHTGREEN_EX+"------------------\nDownload Complete! \n------------------"+Fore.RESET)
+    except:
+        print(Fore.LIGHTRED_EX+"Error Encountered!"+Fore.RESET)
+
+elif choice==2:
     # Exam Center Code Here.
     examCenterCode= input("Enter Exam Center Code \n")
     # Subject Name Here.
@@ -80,7 +116,7 @@ if choice==1:
         print(Fore.LIGHTMAGENTA_EX+"Total Files = "+str(totalSubmission)+Fore.RESET+Fore.LIGHTGREEN_EX+"\nTotal Files Formatted = "+str(totalFileRangeFound)+Fore.RESET+Fore.LIGHTYELLOW_EX+"\nTotal Files without Symbol No = "+str(noSymbolNoCount)+Fore.RESET)
     except OSError:
         print("Could not open/read file, may be this directory does not exist \n---------------------------------------\n"+directory+"\n---------------------------------------\nso check the file path again")
-elif choice==2:
+elif choice==3:
     # Exam Center Code Here.
     examCenterCode= input("Enter Exam Center Code \n")
     # Subject Name Here.
@@ -124,12 +160,14 @@ elif choice==2:
         print(Fore.LIGHTMAGENTA_EX+"Total Files = "+str(totalSubmission)+Fore.RESET+Fore.LIGHTGREEN_EX+"\nTotal Files with the range = "+str(totalFileRangeFound)+Fore.RESET+Fore.LIGHTYELLOW_EX+"\nTotal Files without Symbol No = "+str(noSymbolNoCount)+Fore.RESET+Fore.LIGHTGREEN_EX+"\nSuccessfully!! saved to folder: "+subjectName+Fore.RESET)
     except OSError:
         print(Fore.LIGHTYELLOW_EX+"Could not open/read file, may be this directory does not exist"+Fore.RESET+" \n---------------------------------------\n"+directory+"\n---------------------------------------\nso check the file path again")
-elif choice==3:
-    print(Fore.LIGHTCYAN_EX+"Do you want to check corrupted files from \n1."+directory+"\n2."+destination+":"+Fore.RESET)
+elif choice==4:
+    print(Fore.LIGHTCYAN_EX+"Do you want to check corrupted files from \n1."+download_folder+"\n2."+directory+"\n3."+destination+":"+Fore.RESET)
     folderChoice = int(input())
     if folderChoice==1:
-        correctFormatDirectory=directory
+        correctFormatDirectory=download_folder
     elif folderChoice==2:
+        correctFormatDirectory=directory
+    elif folderChoice==3:
         correctFormatDirectory=destination
     else:
         print("invalid choice")

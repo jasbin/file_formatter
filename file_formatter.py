@@ -22,6 +22,8 @@ import win32com.client
 # ╚█████╔╝██║░░██║██████╔╝██████╦╝██║██║░╚███║  ██║░╚██╗██║░░██║██║░░██║██║░╚██╗██║
 # ░╚════╝░╚═╝░░╚═╝╚═════╝░╚═════╝░╚═╝╚═╝░░╚══╝  ╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚═╝
 
+#Downloaded Files Folder Here
+downloadedFiles = r'Downloaded Files'
 # Local Folder or Full directory where all the PDF answer files are saved
 directory = r'Submitted Answer'
 # Local Folder or Full directory where all the formatted files are need to be saved
@@ -30,11 +32,9 @@ destination = r'Corrected File Format Answer Files'
 init(autoreset=True)
 
 # Create necessary folder if not exist
+Path(downloadedFiles).mkdir(parents=True, exist_ok=True)
 Path(directory).mkdir(parents=True, exist_ok=True)
 Path(destination).mkdir(parents=True, exist_ok=True)
-
-#Downloaded Files Folder Here
-download_folder = r'Downloaded Files'
 
 # File Extension Here. Example: PDF
 fileExtension="pdf"
@@ -47,34 +47,37 @@ print(Fore.LIGHTCYAN_EX+"-----------------"+Fore.RESET)
 print(Fore.LIGHTCYAN_EX+"File Formatter v4 \n-------------------------"+Fore.RESET)
 print(Fore.LIGHTCYAN_EX+"Developed By Jasbin Karki \n-------------------------\n"+Fore.RESET)
 print(Fore.LIGHTCYAN_EX+"Available Choice \n1.Download Files directly from Outlook Mail"+Fore.RESET+Fore.LIGHTYELLOW_EX+"(Outlook Mail should be installed and logged in)"+Fore.RESET+Fore.LIGHTCYAN_EX+" \n2.Format File \n3.Format File with symbol no range \n4.Corrupt File Checker \nEnter your choice:"+Fore.RESET)
-choice=int(input())
+try:
+    choice=int(input())
+except:
+    print(Fore.LIGHTRED_EX+"invalid input"+Fore.RESET)
+    input()
+
 print(Fore.LIGHTBLACK_EX+"####################################################################"+Fore.RESET)
 
 if choice==1:
-    download_folder = os.path.join(Path().resolve(),'Downloaded Files')
-
-    outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-    inbox = outlook.GetDefaultFolder(6) 
-
     try:
+        download_folder = os.path.join(Path().resolve(),downloadedFiles)
+        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        inbox = outlook.GetDefaultFolder(6) 
+
         # Format datetime
         date_entry = input('Enter a date in YYYY-MM-DD format:')
         year, month, day = map(int, date_entry.split('-'))
         filterDateFrom=datetime.date(year, month, day)
         filterDateTo=filterDateFrom+datetime.timedelta(days=1) #increment by 1 day
 
-        # Filter date according to To and From
+        # Filter date according to To and From just to get the file for that exact date
         items = inbox.Items.Restrict("[SentOn] >= \'"+str(filterDateFrom)+"\' AND [SentOn] < \'"+str(filterDateTo)+"\'")
-        flag=1 #download file
         print(Fore.LIGHTYELLOW_EX+"Downloading Started this might take a while..."+Fore.RESET)
         for item in items:
             for attachment in item.Attachments:
                 if attachment.filename.endswith((".pdf", ".PDF")):
-                    print("downloading "+attachment.filename)
+                    print(Fore.LIGHTYELLOW_EX+"downloading "+attachment.filename+Fore.RESET)
                     attachment.SaveAsFile(os.path.join(download_folder, attachment.FileName))
                     print(Fore.LIGHTGREEN_EX+attachment.FileName+" Downloaded!!"+Fore.RESET)
 
-        print(Fore.LIGHTGREEN_EX+"------------------\nDownload Complete! \n------------------"+Fore.RESET)
+        print(Fore.LIGHTGREEN_EX+"--------------------\nDownload Completed!! \n--------------------"+Fore.RESET)
     except:
         print(Fore.LIGHTRED_EX+"Error Encountered!"+Fore.RESET)
 
@@ -161,10 +164,10 @@ elif choice==3:
     except OSError:
         print(Fore.LIGHTYELLOW_EX+"Could not open/read file, may be this directory does not exist"+Fore.RESET+" \n---------------------------------------\n"+directory+"\n---------------------------------------\nso check the file path again")
 elif choice==4:
-    print(Fore.LIGHTCYAN_EX+"Do you want to check corrupted files from \n1."+download_folder+"\n2."+directory+"\n3."+destination+":"+Fore.RESET)
+    print(Fore.LIGHTCYAN_EX+"Choose directory to check for corrupted files \n1."+downloadedFiles+"\n2."+directory+"\n3."+destination+":"+Fore.RESET)
     folderChoice = int(input())
     if folderChoice==1:
-        correctFormatDirectory=download_folder
+        correctFormatDirectory=downloadedFiles
     elif folderChoice==2:
         correctFormatDirectory=directory
     elif folderChoice==3:

@@ -9,7 +9,7 @@ Run the program and then two folder will be generated automatically
 ## Requirements
 Run the program and then two folder will be generated automatically
 ```sh
-python >=3.5
+python >=3.6
 ```
 ## Features
 - Download Files directly from Outlook Mail

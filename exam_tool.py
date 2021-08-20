@@ -4,9 +4,10 @@ import re
 import PyPDF2   # pip install PyPDF2
 from pathlib import Path
 from colorama import init,Fore
-from imbox import Imbox # pip install imbox
 import datetime
 import win32com.client
+import time
+import keyboard
 
 # ██████╗░███████╗██╗░░░██╗███████╗██╗░░░░░░█████╗░██████╗░███████╗██████╗░  ██████╗░██╗░░░██╗
 # ██╔══██╗██╔════╝██║░░░██║██╔════╝██║░░░░░██╔══██╗██╔══██╗██╔════╝██╔══██╗  ██╔══██╗╚██╗░██╔╝
@@ -43,8 +44,9 @@ totalFileRangeFound=0
 noSymbolNoCount=0
 totalValidFiles=0
 totalCorruptedFiles=0
-print(Fore.LIGHTCYAN_EX+"-----------------"+Fore.RESET)
-print(Fore.LIGHTCYAN_EX+"File Formatter v4 \n-------------------------"+Fore.RESET)
+
+print(Fore.LIGHTCYAN_EX+"--------------"+Fore.RESET)
+print(Fore.LIGHTCYAN_EX+"Exam Tool v4.1 \n-------------------------"+Fore.RESET)
 print(Fore.LIGHTCYAN_EX+"Developed By Jasbin Karki \n-------------------------\n"+Fore.RESET)
 print(Fore.LIGHTCYAN_EX+"Available Choice \n1.Download Files directly from Outlook Mail"+Fore.RESET+Fore.LIGHTYELLOW_EX+"(Outlook Mail should be installed and logged in)"+Fore.RESET+Fore.LIGHTCYAN_EX+" \n2.Format File \n3.Format File with symbol no range \n4.Corrupt File Checker \nEnter your choice:"+Fore.RESET)
 try:
@@ -58,29 +60,41 @@ print(Fore.LIGHTBLACK_EX+"######################################################
 if choice==1:
     try:
         download_folder = os.path.join(Path().resolve(),downloadedFiles)
-        outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-        inbox = outlook.GetDefaultFolder(6) 
-
         # Format datetime
         date_entry = input('Enter a date in YYYY-MM-DD format:')
+    
+        # Interval to check mail
+        intervals = int(input('enter time interval(in minutes) to check the mail:'))
+        print(Fore.LIGHTYELLOW_EX+'checking mails every '+str(intervals)+' minutes'+Fore.RESET)
+
         year, month, day = map(int, date_entry.split('-'))
         filterDateFrom=datetime.date(year, month, day)
         filterDateTo=filterDateFrom+datetime.timedelta(days=1) #increment by 1 day
 
-        # Filter date according to To and From just to get the file for that exact date
-        items = inbox.Items.Restrict("[SentOn] >= \'"+str(filterDateFrom)+"\' AND [SentOn] < \'"+str(filterDateTo)+"\'")
-        print(Fore.LIGHTYELLOW_EX+"Downloading Started this might take a while..."+Fore.RESET)
-        for item in items:
-            for attachment in item.Attachments:
-                if attachment.filename.endswith((".pdf", ".PDF")):
-                    print(Fore.LIGHTYELLOW_EX+"downloading "+attachment.filename+Fore.RESET)
-                    try:
-                        attachment.SaveAsFile(os.path.join(download_folder, attachment.FileName))
-                    except Exception as e:
-                        print(Fore.LIGHTRED_EX+"file url is downloaded instead of file because file is not directly attached in mail"+Fore.RESET)
-                    print(Fore.LIGHTGREEN_EX+attachment.FileName+" Downloaded!!"+Fore.RESET)
+        while 1:
+            print(Fore.LIGHTYELLOW_EX+'starting to check for mails..'+Fore.RESET)
+            outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+            inbox = outlook.GetDefaultFolder(6) 
 
-        print(Fore.LIGHTGREEN_EX+"--------------------\nDownload Completed!! \n--------------------"+Fore.RESET)
+            # Filter date according to To and From just to get the file for that exact date
+            items = inbox.Items.Restrict("[SentOn] >= \'"+str(filterDateFrom)+"\' AND [SentOn] < \'"+str(filterDateTo)+"\'")
+            print(Fore.LIGHTYELLOW_EX+"Downloading Started this might take a while..."+Fore.RESET)
+            for item in items:
+                for attachment in item.Attachments:
+                    if attachment.filename.endswith((".pdf", ".PDF")):
+                        print(Fore.LIGHTYELLOW_EX+"downloading "+attachment.filename+Fore.RESET)
+                        try:
+                            attachment.SaveAsFile(os.path.join(download_folder, attachment.FileName))
+                        except Exception as e:
+                            print(Fore.LIGHTRED_EX+"file url is downloaded instead of file because file is not directly attached in mail"+Fore.RESET)
+                        print(Fore.LIGHTGREEN_EX+attachment.FileName+" Downloaded!!"+Fore.RESET)
+
+            print(Fore.LIGHTGREEN_EX+"--------------------\nDownload Completed!! \n--------------------"+Fore.RESET)
+
+            #sleep for intervals minutes
+            time.sleep(intervals*60)
+            if keyboard.is_pressed('s') or keyboard.is_pressed('S'):
+                break
     except Exception as e:
         print(Fore.LIGHTRED_EX+"invalid input"+Fore.RESET)
 

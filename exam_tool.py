@@ -80,15 +80,14 @@ if choice==1:
             items = inbox.Items.Restrict("[SentOn] >= \'"+str(filterDateFrom)+"\' AND [SentOn] < \'"+str(filterDateTo)+"\'")
             print(Fore.LIGHTYELLOW_EX+"Downloading Started this might take a while..."+Fore.RESET)
             for item in items:
-                for attachment in item.Attachments:
-                    if attachment.filename.endswith((".pdf", ".PDF")):
-                        print(Fore.LIGHTYELLOW_EX+"downloading "+attachment.filename+Fore.RESET)
-                        try:
+                try:
+                    for attachment in item.Attachments:
+                        if attachment.filename.endswith((".pdf", ".PDF")):
+                            print(Fore.LIGHTYELLOW_EX+"downloading "+attachment.filename+Fore.RESET)
                             attachment.SaveAsFile(os.path.join(download_folder, attachment.FileName))
-                        except Exception as e:
+                            print(Fore.LIGHTGREEN_EX+attachment.FileName+" Downloaded!!"+Fore.RESET)
+                except Exception as e:
                             print(Fore.LIGHTRED_EX+"file url is downloaded instead of file because file is not directly attached in mail"+Fore.RESET)
-                        print(Fore.LIGHTGREEN_EX+attachment.FileName+" Downloaded!!"+Fore.RESET)
-
             print(Fore.LIGHTGREEN_EX+"--------------------\nDownload Completed!! \n--------------------"+Fore.RESET)
 
             #sleep for intervals minutes

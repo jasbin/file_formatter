@@ -1,5 +1,5 @@
 ## Exam Tool File Formatter
-Exam tool file formatter downloads,checks for corrupted files and formats the file according to the requirements:
+Exam tool file formatter downloads,checks for corrupted files and formats the file according to the requirements. Developed for online exam file submission filtering for everest engineering college.
 
 ## Overview
 Run the program and then two folder will be generated automatically
